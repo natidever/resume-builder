@@ -2,4 +2,4 @@
 client_secrete.json
 .env
 .venv
-__pycache
+__pycache__
