@@ -2,27 +2,32 @@ import os
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from contextlib import asynccontextmanager
+from authlib.integrations.starlette_client import OAuth
+from starlette.middleware.sessions import SessionMiddleware
+from dotenv import load_dotenv
+
 
 
 
 from .routers.core import cv_generator, education, job_experience, languages, personal_information
 from .routers.core import skills
 from  .routers.auth import google_auth
+from  .configs.db_config import create_db_and_tables, create_user
 
-from authlib.integrations.starlette_client import OAuth
-from starlette.middleware.sessions import SessionMiddleware
 
-from dotenv import load_dotenv
-app = FastAPI()
-# Get the directory of the current file (main.py)
-BASE_DIR = Path(__file__).resolve().parent
-STATIC_DIR = os.path.join(BASE_DIR, "static")
 
-# Create static directory if it doesn't exist
-os.makedirs(STATIC_DIR, exist_ok=True)
 
-# Mount static files at the app level instead of router level
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db_and_tables()
+    # create_user()s
+    yield
+
+app = FastAPI(lifespan=lifespan)
+
+
+
 
 load_dotenv(override=True)
 

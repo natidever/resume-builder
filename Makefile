@@ -1,4 +1,9 @@
 up:
-	sudo docker compose up 
+	 docker compose up 
 build:
-	sudo docker compose build
+	 docker compose build
+runx:
+    uvicorn app.main:app 
+   
+
+
